@@ -10,6 +10,7 @@ func main() {
 
 	c := handler.NewImage("resource/haarcascade_frontalface_alt.xml")
 	e.POST("/rectangles", c.Rectangles)
+	e.POST("/draw", c.Draw)
 
 	e.LoadHTMLGlob("resource/*.html")
 	e.GET("/", c.Html)
