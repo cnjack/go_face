@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"errors"
-	"io"
 	"io/ioutil"
 	"net/http"
 
@@ -35,7 +34,6 @@ func (i *Image) Html(c *gin.Context) {
 
 func (i *Image) Rectangles(c *gin.Context) {
 	src, err := ioutil.ReadAll(c.Request.Body)
-	c.Writer.Header().Set("Content-Type", "application/json; charset=utf-8")
 	if err != nil || src == nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, NewCommonRespWithError(http.StatusBadRequest, ErrBadRequest))
 		return
@@ -57,16 +55,19 @@ type Point struct {
 	Y int `json:"y"`
 }
 
-func (i *Image) rectangles(src []byte, w io.Writer) error {
+func (i *Image) rectangles(src []byte, w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	mat := gocv.IMDecode(src, gocv.IMReadUnchanged)
 	if mat.Empty() {
 		return ErrInvalidImage
 	}
 	defer mat.Close()
+
 	rectangles := i.c.DetectMultiScale(mat)
 	if len(rectangles) == 0 {
 		return ErrPeopleNotFound
 	}
+
 	resp := make([]*RectangleResp, 0)
 	for keys := range rectangles {
 		resp = append(resp, &RectangleResp{
@@ -74,6 +75,7 @@ func (i *Image) rectangles(src []byte, w io.Writer) error {
 			Point(rectangles[keys].Max),
 		})
 	}
+
 	e := json.NewEncoder(w)
-	return e.Encode(resp)
+	return e.Encode(NewCommonRespWithData(resp))
 }

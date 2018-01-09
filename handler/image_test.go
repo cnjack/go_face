@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"bytes"
 	"io/ioutil"
 	"log"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -12,12 +12,12 @@ import (
 func TestImage_rectangles(t *testing.T) {
 	i := NewImage("testData/haarcascade_frontalface_alt.xml")
 	src, err := ioutil.ReadFile("testData/dest.jpg")
-	buffer := bytes.NewBuffer(nil)
+	respWriter := httptest.NewRecorder()
 	if assert.NoError(t, err) {
-		err = i.rectangles(src, buffer)
+		err = i.rectangles(src, respWriter)
 		if assert.NoError(t, err) {
-			assert.NotNil(t, buffer.Bytes())
-			log.Println(buffer.String())
+			assert.NotNil(t, respWriter.Body.Bytes())
+			log.Println(respWriter.Body.String())
 		}
 	}
 }
