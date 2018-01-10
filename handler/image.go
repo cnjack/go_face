@@ -49,6 +49,8 @@ func (i *Image) Draw(c *gin.Context) {
 	}
 }
 
+const thickness = 1
+
 func (i *Image) draw(src []byte, w http.ResponseWriter) error {
 	mat := gocv.IMDecode(src, gocv.IMReadUnchanged)
 	if mat.Empty() {
@@ -66,28 +68,28 @@ func (i *Image) draw(src []byte, w http.ResponseWriter) error {
 			rectangles[keys].Min,
 			image.Point{X: rectangles[keys].Min.X, Y: rectangles[keys].Max.Y},
 			color.RGBA{0, 0, 0, 1},
-			2,
+			thickness,
 		)
 		gocv.Line(
 			mat,
 			rectangles[keys].Min,
 			image.Point{X: rectangles[keys].Max.X, Y: rectangles[keys].Min.Y},
 			color.RGBA{0, 0, 0, 1},
-			2,
+			thickness,
 		)
 		gocv.Line(
 			mat,
 			rectangles[keys].Max,
 			image.Point{X: rectangles[keys].Min.X, Y: rectangles[keys].Max.Y},
 			color.RGBA{0, 0, 0, 1},
-			2,
+			thickness,
 		)
 		gocv.Line(
 			mat,
 			rectangles[keys].Max,
 			image.Point{X: rectangles[keys].Max.X, Y: rectangles[keys].Min.Y},
 			color.RGBA{0, 0, 0, 1},
-			2,
+			thickness,
 		)
 	}
 	if mat.Empty() {

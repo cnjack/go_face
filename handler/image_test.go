@@ -2,7 +2,6 @@ package handler
 
 import (
 	"io/ioutil"
-	"log"
 	"net/http/httptest"
 	"testing"
 
@@ -17,7 +16,18 @@ func TestImage_rectangles(t *testing.T) {
 		err = i.rectangles(src, respWriter)
 		if assert.NoError(t, err) {
 			assert.NotNil(t, respWriter.Body.Bytes())
-			log.Println(respWriter.Body.String())
+		}
+	}
+}
+
+func TestImage_draw(t *testing.T) {
+	i := NewImage("testData/haarcascade_frontalface_alt.xml")
+	src, err := ioutil.ReadFile("testData/dest.jpg")
+	respWriter := httptest.NewRecorder()
+	if assert.NoError(t, err) {
+		err = i.draw(src, respWriter)
+		if assert.NoError(t, err) {
+			assert.NotNil(t, respWriter.Body.Bytes())
 		}
 	}
 }
